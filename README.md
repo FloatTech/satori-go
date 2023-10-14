@@ -1,0 +1,1 @@
+# zerobot-adapter-satori
