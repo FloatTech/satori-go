@@ -37,28 +37,28 @@ type Event struct {
 	Timestamp int64 `json:"timestamp"`
 
 	// Channel 事件所属的频道
-	Channel *Channel `json:"channel,omitempty"`
+	Channel *Channel `json:"channel"`
 
 	// Guild 事件所属的群组
-	Guild *Guild `json:"guild,omitempty"`
+	Guild *Guild `json:"guild"`
 
 	// Login 事件的登录信息
-	Login *Login `json:"login,omitempty"`
+	Login *Login `json:"login"`
 
 	// Member 事件的目标成员
-	Member *GuildMember `json:"member,omitempty"`
+	Member *GuildMember `json:"member"`
 
 	// Message 事件的消息
-	Message *Message `json:"message,omitempty"`
+	Message *Message `json:"message"`
 
 	// Operator 事件的操作者
-	Operator *User `json:"operator,omitempty"`
+	Operator *User `json:"operator"`
 
 	// Role 事件的目标角色
-	Role *GuildRole `json:"role,omitempty"`
+	Role *GuildRole `json:"role"`
 
 	// User 事件的目标用户
-	User *User `json:"user,omitempty"`
+	User *User `json:"user"`
 }
 
 type Identify struct {
@@ -71,7 +71,7 @@ type Ready struct {
 }
 
 // List defines model for List.
-type List[T Channel | Message] struct {
+type List[T Channel | Guild | GuildMember | GuildRole | Message | User] struct {
 	// Data 数据数组
 	Data []T `json:"data"`
 
@@ -79,48 +79,69 @@ type List[T Channel | Message] struct {
 	Next string `json:"next"`
 }
 
-// Channel defines model for Channel.
+// Channel 频道.
 type Channel struct {
-	// Avatar 不安全的频道头像
-	Avatar string `json:"avatar"`
-
 	// ID 频道 ID
 	ID string `json:"id"`
+
+	// Type 频道类型
+	Type ChannelType `json:"type"`
 
 	// Name 频道名称
 	Name string `json:"name"`
 
 	// ParentID 父频道 ID
-	ParentID string      `json:"parent_id"`
-	Type     ChannelType `json:"type"`
+	ParentID string `json:"parent_id"`
+
+	// Avatar 频道头像
+	Avatar string `json:"avatar"`
 }
 
-// ChannelType defines model for ChannelType.
-type ChannelType float32
+// ChannelType 频道类型.
+type ChannelType = int64
 
-// Guild defines model for Guild.
+const (
+	// ChannelTypeText 文本频道.
+	ChannelTypeText = iota
+
+	// ChannelTypeVoice 语音频道.
+	ChannelTypeVoice
+
+	// ChannelTypeCategory 分类频道.
+	ChannelTypeCategory
+
+	// ChannelTypeDirect 私聊频道.
+	ChannelTypeDirect
+)
+
+// Guild 群组.
 type Guild struct {
-	// Avatar 不安全的群组头像
-	Avatar string `json:"avatar"`
-
 	// ID 群组 ID
 	ID string `json:"id"`
 
 	// Name 群组名称
 	Name string `json:"name"`
+
+	// Avatar 群组头像
+	Avatar string `json:"avatar"`
 }
 
-// GuildMember defines model for GuildMember.
+// GuildMember 群组成员.
 type GuildMember struct {
-	// Avatar 用户在群组中的头像
-	Avatar string `json:"avatar,omitempty"`
+	// 用户对象
+	User *User `json:"user"`
 
 	// Name 用户在群组中的名称
-	Name string `json:"name,omitempty"`
-	User *User  `json:"user,omitempty"`
+	Name string `json:"name"`
+
+	// Avatar 用户在群组中的头像
+	Avatar string `json:"avatar"`
+
+	// JoinAt 加入时间
+	JoinAt int64 `json:"joined_at"`
 }
 
-// GuildRole defines model for GuildRole.
+// GuildRole 群组角色.
 type GuildRole struct {
 	// ID 群组 ID
 	ID string `json:"id"`
@@ -129,77 +150,75 @@ type GuildRole struct {
 	Name string `json:"name"`
 }
 
-// Status 登录状态
-type Status int8
-
-const (
-	StatusOffline    = iota // 离线
-	StatusOnline            // 在线
-	StatusConnect           // 连接中
-	StatusDisconnect        // 断开连接
-	StatusReconnect         // 重新连接
-)
-
-// Login defines model for Login.
+// Login 登录信息.
 type Login struct {
 	// User 用户对象
-	User *User `json:"user,omitempty"`
+	User *User `json:"user"`
 
 	// SelfID 平台账号
 	SelfID string `json:"self_id"`
 
 	// Platform 平台名称
-	Platform string `json:"platform,omitempty"`
+	Platform string `json:"platform"`
 
 	// Status 登录状态
-	Status Status `json:"status"`
+	Status LoginStatus `json:"status"`
 }
 
-// Message defines model for Message.
+// LoginStatus 登录状态.
+type LoginStatus int64
+
+const (
+	// LoginStatusOffline 离线.
+	LoginStatusOffline = iota
+	// LoginStatusOnline 在线.
+	LoginStatusOnline
+	// LoginStatusConnect 连接中.
+	LoginStatusConnect
+	// LoginStatusDisconnect 断开连接.
+	LoginStatusDisconnect
+	// LoginStatusReconnect 重新连接.
+	LoginStatusReconnect
+)
+
+// Message 消息.
 type Message struct {
-	Channel *Channel `json:"channel,omitempty"`
+	// ID 消息 ID
+	ID string `json:"id"`
 
 	// Content 消息内容
 	Content string `json:"content"`
 
-	// CreatedAt 消息发送的时间戳
-	CreatedAt float32 `json:"created_at,omitempty"`
-	Guild     *Guild  `json:"guild,omitempty"`
+	// Channel 频道对象
+	Channel *Channel `json:"channel"`
 
-	// ID 消息 ID
-	ID     string       `json:"id"`
-	Member *GuildMember `json:"member,omitempty"`
+	// Guild 群组对象
+	Guild *Guild `json:"guild"`
+
+	// Member 成员对象
+	Member *GuildMember `json:"member"`
+
+	// User 用户对象
+	User *User `json:"user"`
+
+	// CreatedAt 消息发送的时间戳
+	CreatedAt int64 `json:"created_at"`
 
 	// UpdatedAt 消息修改的时间戳
-	UpdatedAt float32 `json:"updated_at,omitempty"`
-	User      *User   `json:"user,omitempty"`
+	UpdatedAt int64 `json:"updated_at"`
 }
 
-// MessageCreatePayload defines model for MessageCreatePayload.
-type MessageCreatePayload struct {
-	// ChannelID 消息要发送到的频道。
-	//
-	// 在 Chronocat，群聊对应的频道为群号，
-	// 私聊对应的频道为 private: 后跟 QQ 号。
-	ChannelID string `json:"channel_id"`
-
-	// Content 消息的内容。
-	//
-	// 格式为 Satori 消息元素字符串。
-	Content string `json:"content"`
-}
-
-// User defines model for User.
+// User 用户.
 type User struct {
-	// Avatar 用户头像
-	Avatar string `json:"avatar,omitempty"`
-
 	// ID 用户 ID
 	ID string `json:"id"`
 
-	// IsBot 是否为机器人
-	IsBot bool `json:"is_bot,omitempty"`
-
 	// Name 用户名称
 	Name string `json:"name"`
+
+	// Avatar 用户头像
+	Avatar string `json:"avatar"`
+
+	// IsBot 是否为机器人
+	IsBot bool `json:"is_bot"`
 }
