@@ -15,7 +15,7 @@ type Client struct {
 
 // NewClient 创建一个 satori 客户端.
 func NewClient(api, token string) *Client {
-	return &Client{api: api, token: token}
+	return &Client{api: api, token: token, cancel: make(chan bool)}
 }
 
 // Platform 获取当前 satori platform.

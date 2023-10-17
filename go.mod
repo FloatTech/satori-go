@@ -1,4 +1,4 @@
-module github.com/kanrichan/zerobot-adapter-satori
+module github.com/kanrichan/satori-go
 
 go 1.19
 

@@ -7,8 +7,6 @@ import (
 	"net/http"
 )
 
-type GuildList List[Channel]
-
 func (cli *Client) call(endpoint string, request any, response any) (err error) {
 	var buf *bytes.Buffer
 	if request != nil {

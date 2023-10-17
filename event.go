@@ -67,7 +67,7 @@ func (cli *Client) connect() {
 		break
 	ERROR:
 		log.Warnf("failed to connect to satori: %s %v", cli.api, err)
-		time.Sleep(5 * time.Second) // 等待两秒后重新连接
+		time.Sleep(5 * time.Second)
 	}
 }
 
@@ -79,7 +79,7 @@ func (cli *Client) Listen(handler func(*Event)) {
 		if err != nil { // reconnect
 			log.Warnf("lost connection to satori: %s %v", cli.api, err)
 			cli.cancel <- true
-			time.Sleep(time.Millisecond * time.Duration(3))
+			time.Sleep(time.Second * time.Duration(2))
 			cli.connect()
 			continue
 		}
