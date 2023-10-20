@@ -1,4 +1,4 @@
-module github.com/kanrichan/satori-go
+module github.com/FloatTech/satori-go
 
 go 1.19
 
